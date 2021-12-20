@@ -1,5 +1,5 @@
 ---
-title: "modifiees data"
+title: "modifies data"
 author: "himanshi & jose"
 date: "12/11/2021"
 output: html_document
@@ -13,7 +13,8 @@ library(tidyverse)
 This document modifies the data, restricting the years and adding two variable 
 
 ```{r }
-df <- read.csv("pitchfork.csv")
+
+df <- read.csv("../Data/pitchfork.csv")
 
 # incomplete data for first and last year
 df <- df %>% filter(pub_year < 2017 & pub_year > 1999) 
@@ -35,7 +36,7 @@ creates modified data frame to be used in further analysis
 ```{r }
 
 # converts to csv, for easier use 
-write_csv(pitchfork, "pitchfork_modified.csv")
+write_csv(pitchfork, "../Data/pitchfork_modified.csv")
 
 
 ```

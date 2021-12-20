@@ -19,7 +19,7 @@ library(stringr)
 
 
 ```{r }
-df <- read.csv("pitchfork_modified.csv")
+df <- read.csv("../Data/pitchfork_modified.csv")
 
 pitchfork <- df %>% filter(!artist.x=="shat")
 
@@ -88,7 +88,7 @@ ggplot(aes(reorder(x=feature, chi2), y=chi2))+
 terrible_music_terms
 
 
-ggsave("terrible_words_recalculated.png", 
+ggsave("../Images/terrible_words_recalculated.png", 
        plot = terrible_music_terms_2,
        dpi=300)
 ```

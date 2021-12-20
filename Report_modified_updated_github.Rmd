@@ -11,7 +11,7 @@ Jose de Los Heros (j.de-los-heros@mpp.hertie-school.org):
 
 Responsible for: 
 
-*   Merging data
+*   Getting, wrangling and merging data
 
 *   Word frequencies
 
@@ -41,7 +41,7 @@ We are broadly interested in answering the question: how does lanugage differ ac
 
 Pitchfork is an online music publication started in 1995 as the brainchild of blogger Ryan Schreiber. The website is best known for reviews of new albums but it also publishes criticism of older music. Over the last two decades, the audience of Pitchfork has grown, and it is currently one of the most widely read music publications on the web. 
 
-In the indie-music scene, particularly, Pitchfork has acted as a kind of trend setter. This is not to say that the website is a monolith with a single taste. Quite the opposite, the reviews are often written by outside contributors, each with their own aesthetic criteria. However, there might be interesting patterns that emerge by taking their critical production as an aggregate. We might get a better sense of how this institution has defined music culture over time. Naturally, others have had similar curiosities. Nolan Conway, for instance, has explored the [biases](https://nolanbconaway.github.io/blog/2017/pitchfork-roundup.html) of the website. Evan Moore has looked at [word frequencies by genre](https://github.com/evanm31/p4k-scraper/blob/master/analysis/presentation.pdf) and Daniel Cañueto has analyzed the [score distributions by author and genre]( https://medium.com/@danielcanueto/a-review-of-pitchfork-reviews-part-1-exploratory-and-time-series-analysis-a0ce46cd4c3e). Yet, as far as we know, no one has compared the language of excellent and terrible reviews. That is largely what this project is about. 
+In the indie-music scene, particularly, Pitchfork has acted as a kind of trend setter. This is not to say that the website is a monolith with a single taste. Quite the opposite, the reviews are often written by outside contributors, each with their own aesthetic criteria. However, there might be interesting patterns that emerge by taking their critical production as an aggregate. In doing so, we might get a better sense of how this institution has defined music culture. Naturally, others have had similar curiosities. Nolan Conway, for instance, has explored the [biases](https://nolanbconaway.github.io/blog/2017/pitchfork-roundup.html) of the website. Evan Moore has looked at [word frequencies by genre](https://github.com/evanm31/p4k-scraper/blob/master/analysis/presentation.pdf) and Daniel Cañueto has analyzed the [score distributions by author and genre]( https://medium.com/@danielcanueto/a-review-of-pitchfork-reviews-part-1-exploratory-and-time-series-analysis-a0ce46cd4c3e). Yet, as far as we know, no one has compared the language of excellent and terrible reviews. That is largely what this project is about. 
 
 
 ### <span style="color: gray15;">**2. Research Question**</span>
@@ -92,7 +92,7 @@ While the number of characters for terrible music reviews is slightly more than 
 Let's now turn to the language of the reviews, and look at how they differ. One way to approach this question is to look at word frequencies. What are the words that appear most often in terrible and excellent reviews? To calculate these frequencies, we removed prepositions, articles and other common words in English, words which are often the most frequent in all types of writing, regardless of the content.^[These are stopwords pre-loaded in the Quanteda package.] 
 
 ```{r echo=FALSE, fig.cap="Figure 3: Word Frequencies", out.width = '100%'}
-knitr::include_graphics("frequency_plot.png")
+knitr::include_graphics("Images/frequency_plot.png")
 ```
 The results, shown above in Figure 3, suggest that the language of reviews is relatively stable: the words that appear most frequently in excellent reviews are also the ones that show up in terrible ones. Both frequency lists share 8 out of their 10 words. The two terms that differ are *new* and *sound* for excellent reviews, and *can* and *song* for terrible reviews. These differences, however, are not particularly illuminating. *Song* already appears in both lists in another form -as the plural *songs*- and *can* is a common verb. The presence of *new* is perhaps to be expected among excellent reviews, as many albums which score an 8 and above are labeled as 'Best New Music.' This label likely makes an appearance in some form within the review's text. But the rest of the words -*music*, *album*, *band*, *songs*, *sound*- are neutral: they just name the things which are being assessed in reviews. This is the talk of the trade. *Like*, finally, which sits atop both lists, is [one of the most common words in the English language](https://en.wikipedia.org/wiki/Most_common_words_in_English) but is also particularly relevant for music critics, who often draw comparisons between the music they're describing and things that are already familiar to readers. 
 
@@ -106,7 +106,7 @@ One way to get this measure is to look at the strength of association between wo
 
 
 ```{r echo=FALSE, fig.cap="Figure 3", out.width = '100%'}
-knitr::include_graphics("terrible_words_1.png")
+knitr::include_graphics("Images/terrible_words_1.png")
 ```
 
 The figure above shows the 30 terms most closely associated with reviews of terrible music.  All but five words -*shat*, *shit*, *awful*, *unlistenable* and *worst*-  appear to be proper nouns: names of artists, or perhaps albums, which received bad reviews. This means that, on the whole, the language used to describe bad and good music is fairly similar; the differences lie in the particulars. 
@@ -114,7 +114,7 @@ The figure above shows the 30 terms most closely associated with reviews of terr
 Before exploring these more general terms, let's assess just how bad the named offenders are. In other words, let's see how the artists or albums appearing in this list fare in terms of review scores.
 
 ```{r echo=FALSE, fig.cap="Figure 4", out.width = '100%'}
-knitr::include_graphics("terrible_artist_plot.png")
+knitr::include_graphics("Images/terrible_artist_plot.png")
 ```
 
 To do so, we find the reviews in which these terms appear most often, and then find the corresponding artist or album.^[It turns out that all these names refer to artists. Some words on the list are just the artist's name, such as Liz Phair, The Warlocks or The Dears; in other cases, they refer to the names of people in bands. Molko, for example, is the name of the lead singer of Placebo.] Then, we group these artists together and compare their scores to the rest of the reviews in the dataset. This is clearly a sub-performing group. The median score of all albums put out by these artists lies below 4.3. Scores in the 75 percentile are a meager 5.8, lying below even the 25th percentile of the global dataset. In other words, the association of their names with terrible music appears to be warranted. 
@@ -129,7 +129,7 @@ Looking more closely at usages of the word, we see that it occurs in 9 different
 
 The eight reviews containing single mentions of *shat* received a collective average of 6.55, which is slightly below the 7.01 mean for the whole dataset but still substantially above the threshold for our definition of terrible music. Clearly, gastro-intenstinal associations are perhaps not what you want to evoke with your music. But in many of the reviews the word is not used to judge its quality. Since this is such a sample, we were able to look at all occurrences. In one review, for instance, the author uses the word to recount an unsavory stage performance; in another it quotes directly from the lyrics. Overall, in no case was it used to make a statement about the music itself. 
 
-What about that *other* album that mentions the term 21 times? Perhaps unsurprisingly, *shat* in this particular case is being used a proper noun -as in Shat the artist whose album *The Cunt Chronicle* received a score of 0.02 in 2003. Given the album's exceptionally low score, in addition to the high frequency of the word, the presence of 'shat' in our list of terms makes more sense. In fact, we have an inkling that it might be solely responsible for the word's high level of association with terrible music. To check whether this is the case, we exclude *The Cunt Chronicle* review from our analysis and recalculate the correlation between words and terrible music. The new list is available in the appendix. After the exclusion, the term 'shat' no longer figures among the  words most strongly associated with terrible music. 
+What about that *other* album that mentions the term 21 times? Perhaps unsurprisingly, *shat* in this particular case is being used a proper noun -as in Shat the artist whose album *The Cunt Chronicle* received a score of 0.02 in 2003. Given the album's exceptionally low score, in addition to the high frequency of the word, the presence of *shat* in our list of terms makes more sense. In fact, we have an inkling that it might be solely responsible for the word's high level of association with terrible music. To check whether this is the case, we exclude *The Cunt Chronicle* review from our analysis and recalculate the correlation between words and terrible music. The new list is available in the appendix. After the exclusion, the term *shat* no longer figures among the  words most strongly associated with terrible music. 
 
 We notice too that *shit* is now off the list.  As it turns out, Pitchfork writers were not as foul-mouthed as first impressions suggested. This is because the same review that featured the *shat* 21 times also included *shit* 20 times. Without this one outlier, neither word makes the cut. In their place, we get *Mumford*, another proper noun, and *least*, a superlative.  
 
@@ -141,10 +141,10 @@ What about these other words: *awful*, *unlistenable*, *worst*, and *least*? The
 To get a rough sense of when, where and how often these words appear, we count the total number of occurrences and the number of reviews in which they appear, but we also check to see if there are any artists or albums whose names include the word, lest we find ourselves with another case of *Shat.* Additionally, we find the minimum and maximum scores of reviews containing the word, as well as the median. 
 
 ```{r echo=FALSE, fig.cap="Table 1", out.width = '100%'}
-knitr::include_graphics("table_terrible.html")
+knitr::include_graphics("Images/table_terrible.html")
 ```
 
-The results shown in Table 1 suggest several things. On the one hand, it appears that these terms are rarely being used as proper nouns. Only *least* forms part of an artist's name: "The Boy Least Likely To." Similarly, there are three albums that contain *worst*, but no other term appears in any other album title.^[These albums are *Favourite Worst Nightmare* by the Arctic Monkeys, *The Worst You Can Do is Harm* by the Long Winters, and *The Worst of the Black Box Recorder* by The Black Box Recorder. They received scores of 7.4, 7.3 and 7.3, in that order.] Very generally, this at least gives us some assurance that the words are not being used simply to name things most of the time.  Of course, this does not guarantee that they are being used descriptively, or in direct relation to the music, but it helps stave off our fear that any single album or artist could drive the correlation. Similarly, for all terms, the ratio between total occurrences and number of reviews is closer to 1 than was the case for *shat*. Again, while we cannot discard the possibility of a few particularly bad albums driving the correlation, given the larger sample of occurrences and more even spread across reviews, this appears less likely. For now, there appear to be no glaring anomalies. 
+The results shown in Table 1 suggest several things. On the one hand, it appears that these terms are rarely being used as proper nouns. Only *least* forms part of an artist's name: The Boy Least Likely To. Similarly, there are three albums that contain *worst*, but no other term appears in any other album title.^[These albums are *Favourite Worst Nightmare* by the Arctic Monkeys, *The Worst You Can Do is Harm* by the Long Winters, and *The Worst of the Black Box Recorder* by The Black Box Recorder. They received scores of 7.4, 7.3 and 7.3, in that order.] Very generally, this at least gives us some assurance that the words are not being used simply to name things most of the time.  Of course, this does not guarantee that they are being used descriptively, or in direct relation to the music, but it helps stave off our fear that any single album or artist could drive the correlation. Similarly, for all terms, the ratio between total occurrences and number of reviews is closer to 1 than was the case for *shat*. Again, while we cannot discard the possibility of a few particularly bad albums driving the correlation, given the larger sample of occurrences and more even spread across reviews, this appears less likely. For now, there appear to be no glaring anomalies. 
 
 What is striking about these results, however, is that all four terms appear across the whole specturm of scores: from 0 to 10. This suggests that despite their unambiguously negative connotations, Pitchfork writers have managed to use *unlistenable*, *awful*, *worst*, and *least* in a wide range of contexts, many of them positive.^[The one exception in this list might be *awful*, which can be used neutrally, as in: "you made an awful lot of pasta today."] Yet, one wonders: how might a word like *unlistenable*, for example, be used within a perfect 10 review? In fact, *unlistenable* was used in two different 10-scoring reviews, both reviews of albums by Nirvana. 
 
@@ -177,7 +177,7 @@ We know then that these terms are being used in different ways, and this explain
 
 
 ```{r echo=FALSE, fig.cap="Figure 5", out.width = '100%'}
-knitr::include_graphics("ridge_plot_1.png")
+knitr::include_graphics("Images/ridge_plot_1.png")
 ```
 
 
@@ -216,7 +216,7 @@ We can see that the average score for reviews containing the word *bonus* is sli
 
 
 ```{r echo=FALSE, fig.cap="Figure 5", out.width = '100%'}
-knitr::include_graphics("terrible_words_recalculated.png")
+knitr::include_graphics("Images/terrible_words_recalculated.png")
 ```
 
 

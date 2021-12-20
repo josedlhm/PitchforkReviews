@@ -95,7 +95,7 @@ merge_2 <- (new_list %>%  reduce(left_join, by=c("reviewid")))
 merge_3 <- left_join(merge_1,merge_2, by=c("reviewid"))
 
 # converts to csv, for easier use 
-write_csv(merge_3, "pitchfork.csv")
+write_csv(merge_3, "../Data/pitchfork.csv")
 
 ```
 

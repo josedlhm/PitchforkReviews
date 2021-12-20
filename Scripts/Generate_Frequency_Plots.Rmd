@@ -18,7 +18,7 @@ library(gridExtra)
 
 
 ```{r }
-pitchfork <- read.csv("pitchfork_modified.csv")
+pitchfork <- read.csv("../Data/pitchfork_modified.csv")
 
 ```
 
@@ -126,7 +126,7 @@ excellent_frequency_plot
 frequency_plots <- grid.arrange(excellent_frequency_plot, terrible_frequency_plot, 
              nrow = 1)
 
-ggsave("frequency_plot.png", 
+ggsave("../Images/frequency_plot.png", 
        plot = frequency_plots, 
        dpi=300)
 
