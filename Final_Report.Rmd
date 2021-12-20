@@ -1,10 +1,10 @@
 ---
-output:
+output: The Lnguage of Pitchfork Reviews
   html_document: default
   pdf_document: default
 ---
 
-## <span style="color: gray15;">**The Language of Pitchfork Music Reviews**</span>
+## <span style="color: gray15;">**The Language of Pitchfork Reviews**</span>
 
 ### <span style="color: gray15;">**Project Contributors**</span>
 Jose de los Heros (j.de-los-heros@mpp.hertie-school.org):

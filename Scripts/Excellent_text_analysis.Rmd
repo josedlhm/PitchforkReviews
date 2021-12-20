@@ -1,0 +1,149 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+
+
+```{r }
+pitchfork <- read.csv("pitchfork_modified.csv")
+
+```
+
+
+```{r, echo=FALSE, include=T} 
+# creates a quanteda corpus 
+pitchfork_corpus <- pitchfork %>% 
+  quanteda::corpus(text_field = "content")
+
+```
+
+# Pre-Processing 
+
+```{r, echo=FALSE, include=T}
+# creates corpus tokens 
+pitchfork_tokens <- tokens(pitchfork_corpus, 
+                           remove_punct = T, 
+                           remove_numbers = T, 
+                           remove_symbols = T, 
+                           include_docvars = TRUE) %>%
+  quanteda::tokens_tolower() %>% 
+  quanteda::tokens_remove(stopwords('en'), min_nchar=2)# keeps words with 2 or more characters
+
+
+```
+
+# creates document feature matrix 
+```{r, echo=FALSE, include=T}
+# creates a document feature matrix 
+dfm <- quanteda::dfm(pitchfork_tokens)
+# keeps terms that occur 20 or more times 
+dfm <- dfm_trim(dfm, min_termfreq = 20)
+
+```
+
+
+# Keyness 
+
+```{r, echo=FALSE, include=T}
+# generate keyness
+tstat_key2 <- textstat_keyness(dfm, 
+                              target = dfm$excellent_music==1)
+
+```
+
+
+
+```{r, echo=FALSE, include=T}
+
+excellent_music_terms <- tstat_key2 %>% head(30) %>% 
+ggplot(aes(reorder(x=feature, chi2), y=chi2))+
+  geom_bar(stat="identity", fill="purple")+
+  coord_flip()+
+  labs(title ="Correlation between Excellent Music and Words", 
+       y ="Chi Squared", 
+       x= NULL)+
+  theme_minimal()
+
+excellent_music_terms
+
+ggsave("plot5.png",
+       plot = excellent_music_terms)
+```
+
+The words most correlated with excellent music are quite interesting and different from the most correlated words for terrible music. As opposed to terrible music, where we either had proper nouns or adjectives, this list of words contains mainly nouns and proper nouns. There is no word that can be used to praise good music (such as excellent, great, awesome etc). Apart from what seem like proper nouns, some words that appear the most are: *reissue* (and *reissues*), *remastering* (and *remastered*) and *bonus*. It makes intuitive sense to have reissue and remaster in this list, since reissued or remastered albums are likely to be good.
+
+Before exploring these terms associated with excellent music, lets assess just how good this music is. In other words, how do the artists or albums appearing in this list fare in terms of review scores.
+
+```{r, echo=FALSE, include=T}
+# gets list of terms from tstat
+list_of_terms2 <- tstat_key2$feature[1:30]
+# excludes non-nouns
+list_of_terms2 <- list_of_terms2[!list_of_terms2%in% c("reissue",
+                                                    "reissues", 
+                                                    "remastering", 
+                                                    "remastered", 
+                                                    "bonus")]
+
+# empty vector
+artist_names2 <- c(1:length(list_of_terms2))
+
+# gets doc with most occurences of term
+for (i in 1:length(list_of_terms2)) {
+  occurrence2 <- kwic(pitchfork_tokens, 
+                     list_of_terms2[i], 
+                     window = 5) #gets occurences of term
+  
+  doc_name <- occurrence2 %>% 
+  group_by(docname) %>% 
+  summarize(n=n()) %>% 
+  arrange(desc(n)) %>% 
+  head(1) %>% 
+  pull(docname) # gets name of doc with highest occurences
+  
+  # converts doc name to digit
+  text_digit <- as.numeric(str_extract(doc_name,"[[:digit:]]+"))
+  
+  #gets artist name from corpus, using doc name
+  artist_names2[i] <- pitchfork_corpus[text_digit]$artist.x
+}
+
+```
+
+
+
+```{r, echo=FALSE, include=T}
+excellent_artist_plot <- pitchfork %>% 
+  filter(!is.na(artist.x)) %>% 
+  mutate(excellent_artist = ifelse(artist.x %in% artist_names2, "Yes","No")) %>% 
+  ggplot(aes(x = as.factor(excellent_artist), y=score, fill= as.factor(excellent_artist))) +
+  geom_boxplot()+
+     scale_fill_manual(values=c("purple", "seagreen4"))+
+  labs(title = "Distribution of Scores of Excellent Artists (boxplot)",
+       x = "Name Appears in Key Terms",
+       y = "Average Score") +
+  scale_y_continuous(limits = c(0, 10), breaks = c(seq(0, 10, 1))) +
+  coord_flip()+
+  theme_minimal()+
+  theme(legend.position = "none")
+
+excellent_artist_plot2 <- pitchfork %>% 
+  filter(!is.na(artist.x)) %>% 
+  mutate(excellent_artist = ifelse(artist.x %in% artist_names2, "Yes","No")) %>% 
+  ggplot(aes(x = as.factor(excellent_artist), y=score, fill= as.factor(excellent_artist))) +
+  geom_violin()+
+     scale_fill_manual(values=c("purple", "seagreen4"))+
+  labs(title = "Distribution of Scores of Excellent Artists (violin plot)",
+       x = "Name Appears in Key Terms",
+       y = "Average Score") +
+  scale_y_continuous(limits = c(0, 10), breaks = c(seq(0, 10, 1))) +
+  coord_flip()+
+  theme_minimal()+
+  theme(legend.position = "none")
+excellent_artist_plot2
+
+excellent_artist_plot_final <- ggarrange(excellent_artist_plot, excellent_artist_plot2, nrow=2)
+
+ggsave("plot6.png",
+       plot = excellent_artist_plot_final)
+```
