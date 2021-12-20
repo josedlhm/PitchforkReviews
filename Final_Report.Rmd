@@ -1,5 +1,5 @@
 ---
-output: The Lnguage of Pitchfork Reviews
+output: 
   html_document: default
   pdf_document: default
 ---
