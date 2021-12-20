@@ -1,0 +1,46 @@
+---
+title: "modifiees data"
+author: "himanshi & jose"
+date: "12/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+This document modifies the data, restricting the years and adding two variable 
+
+```{r }
+df <- read.csv("pitchfork.csv")
+
+# incomplete data for first and last year
+df <- df %>% filter(pub_year < 2017 & pub_year > 1999) 
+
+
+```
+
+Creates dummy variables for excellent and terrible music 
+
+```{r }
+pitchfork <- df %>% mutate(excellent_music = ifelse(score >=8, 1, 0))
+
+pitchfork <- pitchfork %>% mutate(terrible_music = ifelse(score <=3, 1,0))
+
+```
+
+creates modified data frame to be used in further analysis 
+
+```{r }
+
+# converts to csv, for easier use 
+write_csv(pitchfork, "pitchfork_modified.csv")
+
+
+```
+
+
+
+
+

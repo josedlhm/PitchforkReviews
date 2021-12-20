@@ -1,0 +1,115 @@
+---
+title: "Getting Data"
+author: "himanshi & jose"
+date: "12/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(RSQLite)
+library(tidyverse)
+library(rlang)
+```
+
+### Gets Data 
+
+```{r }
+# opens connection to pitchfork database
+con <- dbConnect(drv=RSQLite::SQLite(), dbname="pitchfork.sqlite")
+
+# gets all tables 
+tables <- dbListTables(con)
+
+```
+
+### Compiles dataframes in list
+
+```{r }
+# creates empty list
+list_dfs <- vector("list", length=length(tables))
+
+# stores tables into empty list
+for (i in seq(along=tables)) {
+  list_dfs[[i]] <- dbGetQuery(conn = con, 
+                              statement = paste("SELECT * FROM '", tables[[i]], "'", sep=""))
+}
+```
+
+### Modifies dataframes for merge by taking first of every value
+
+```{r }
+# creates empty list to store modified tables 
+modified_dfs <- vector("list", length = length(list_dfs))
+
+# takes only first value of variables (ie if there are multiple artists or genres for a review takes only first) 
+for (i in 1:length(list_dfs)) {
+  
+  modified_dfs[[i]] <- list_dfs[[i]] %>% 
+    filter(!is.na(reviewid)) %>%  
+    group_by(reviewid) %>% 
+    summarize_all(first) 
+}  
+```
+
+### Adds column counting number of artists, genres, labels, authors
+
+```{r }
+# empty list to store tables summarized in a different way
+modified_dfs_2 <- vector("list", length = 4)
+
+# same proccedure, but only for tables with variables with more than 1 entry per review
+for (i in c(1,3,4,6)) {
+  
+  modified_dfs_2[[i]] <- list_dfs[[i]] %>% 
+    filter(!is.na(reviewid)) %>%  
+    group_by(reviewid) %>% 
+    summarize(n = n()) 
+}  
+
+# @ Himanshi did this manually because I couldn't iterate over a vector of strings 
+# to change variable names. i wanted n_arist, n_genre above inside summarize
+# do you know how to do this? 
+
+modified_dfs_2[[1]] <- modified_dfs_2[[1]] %>%  rename (n_artist = n)
+
+modified_dfs_2[[3]] <- modified_dfs_2[[3]] %>%  rename (n_genre = n)
+
+modified_dfs_2[[4]] <- modified_dfs_2[[4]] %>%  rename (n_labels = n)
+
+modified_dfs_2[[6]] <- modified_dfs_2[[6]] %>%  rename (n_authors = n)
+
+new_list <- list(modified_dfs_2[[1]], modified_dfs_2[[3]], modified_dfs_2[[4]],modified_dfs_2[[6]])
+
+```
+
+
+### Merges dataframes saves to csv 
+```{r }
+# merges all tables by reviewid
+merge_1 <- (modified_dfs %>%  reduce(left_join, by=c("reviewid")))
+#
+merge_2 <- (new_list %>%  reduce(left_join, by=c("reviewid")))
+
+merge_3 <- left_join(merge_1,merge_2, by=c("reviewid"))
+
+# converts to csv, for easier use 
+write_csv(merge_3, "pitchfork.csv")
+
+```
+
+
+
+
+### Closes connection 
+
+```{r }
+# disconnects 
+dbDisconnect(con)
+
+```
+
+
+
+

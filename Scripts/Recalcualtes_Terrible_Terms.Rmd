@@ -1,0 +1,94 @@
+---
+title: "re-calculate key terrible terms"
+author: "himanshi & jose"
+date: "12/12/2021"
+output: html_document
+---
+
+```{r setup, echo=FALSE, include=FALSE}
+library(readtext)
+library(tidyverse)
+library(quanteda)
+library(quanteda.textstats)
+library(quanteda.textplots)
+library(quanteda.corpora)
+library(ggplot2)
+library(purrr)
+library(stringr)
+```
+
+
+```{r }
+df <- read.csv("pitchfork_modified.csv")
+
+pitchfork <- df %>% filter(!artist.x=="shat")
+
+
+```
+
+
+
+```{r, echo=FALSE, include=T}
+# creates a quanteda corpus 
+pitchfork_corpus <- pitchfork %>% 
+  quanteda::corpus(text_field = "content")
+
+```
+
+# Pre-Processing 
+
+```{r, echo=FALSE, include=T}
+# creates corpus tokens 
+pitchfork_tokens <- tokens(pitchfork_corpus, 
+                           remove_punct = T, 
+                           remove_numbers = T, 
+                           remove_symbols = T, 
+                           include_docvars = TRUE) %>%
+  quanteda::tokens_tolower() %>% 
+  quanteda::tokens_remove(stopwords('en'), min_nchar=2)# keeps words with 2 or more characters
+
+
+```
+
+# creates document feature matrix 
+```{r, echo=FALSE, include=T}
+# creates a document feature matrix 
+dfm <- quanteda::dfm(pitchfork_tokens)
+# keeps terms that occur 20 or more times 
+dfm <- dfm_trim(dfm, min_termfreq = 20)
+
+```
+
+
+# Keyness 
+
+```{r, echo=FALSE, include=T}
+# generate keyness
+tstat_key_2 <- textstat_keyness(dfm, 
+                              target = dfm$terrible_music==1)
+
+textplot_keyness(tstat_key, labelsize = 1.5, n=30L)
+
+
+```
+
+
+
+```{r, echo=FALSE, include=T}
+
+terrible_music_terms_2 <- tstat_key_2 %>% head(30) %>% 
+ggplot(aes(reorder(x=feature, chi2), y=chi2))+
+  geom_bar(stat="identity", fill="purple")+
+  coord_flip()+
+  labs(title ="Re Calculated Correlation between Terrible Music and Words", 
+       y ="Strength of association (Chi Squared)", 
+       x= NULL)+
+  theme_minimal()
+
+terrible_music_terms
+
+
+ggsave("terrible_words_recalculated.png", 
+       plot = terrible_music_terms_2,
+       dpi=300)
+```

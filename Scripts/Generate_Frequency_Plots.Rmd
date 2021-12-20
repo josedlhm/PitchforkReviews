@@ -1,0 +1,133 @@
+---
+title: "Frequency Plots"
+author: "himanshi & jose"
+date: "12/12/2021"
+output: html_document
+---
+
+```{r setup, echo=FALSE, include=FALSE}
+library(tidyverse)
+library(quanteda)
+library(quanteda.textstats)
+library(quanteda.textplots)
+library(quanteda.corpora)
+library(ggplot2)
+library(stringr)
+library(gridExtra)
+```
+
+
+```{r }
+pitchfork <- read.csv("pitchfork_modified.csv")
+
+```
+
+
+```{r, echo=FALSE, include=T}
+# creates a quanteda corpus 
+pitchfork_corpus <- pitchfork %>% 
+  quanteda::corpus(text_field = "content")
+
+```
+
+# Pre-Processing 
+
+```{r, echo=FALSE, include=T}
+# creates corpus tokens 
+pitchfork_tokens <- tokens(pitchfork_corpus, 
+                           remove_punct = T, 
+                           remove_numbers = T, 
+                           remove_symbols = T, 
+                           include_docvars = T) %>%
+  quanteda::tokens_tolower() %>% 
+  quanteda::tokens_remove(stopwords('en'), min_nchar=2)# keeps words with 2 or more characters
+
+
+```
+
+# creates subsets 
+```{r, echo=FALSE, include=T}
+
+pitchfork_tokens_terrible <- tokens_subset(pitchfork_tokens, terrible_music==1)
+
+pitchfork_tokens_excellent <- tokens_subset(pitchfork_tokens, excellent_music==1)
+
+
+```
+
+
+# creates dfms for terrible tokens 
+```{r, echo=FALSE, include=T}
+
+# creates a document feature matrix 
+dfm_terrible <- quanteda::dfm(pitchfork_tokens_terrible)
+# keeps terms that occur 20 or more times 
+dfm_terrible <- dfm_trim(dfm_terrible, min_termfreq = 20)
+
+```
+
+
+# creates dfms for excellent tokens 
+```{r, echo=FALSE, include=T}
+
+# creates a document feature matrix 
+dfm_excellent <- quanteda::dfm(pitchfork_tokens_excellent)
+# keeps terms that occur 20 or more times 
+dfm_excellent <- dfm_trim(dfm_excellent, min_termfreq = 20)
+
+```
+
+
+# creates relative frequency dfms for both subgroups
+```{r, echo=FALSE, include=T}
+terrible_frequency <- dfm_weight(dfm_terrible, scheme = "count")
+
+excellent_frequency<- dfm_weight(dfm_excellent, scheme = "count")
+
+```
+
+
+
+```{r, echo=FALSE, include=T}
+
+terrible_frequency_plot <- textstat_frequency(terrible_frequency, n = 10) %>%
+  ggplot(aes(x = reorder(feature, -rank), y = frequency)) +
+  geom_col(fill = "purple") + 
+  coord_flip() +
+  labs(x = "", 
+       y = "Total occurrences", 
+       title = "Word Frequency in Terrible Reviews")+
+  theme_minimal()+
+  theme(legend.position = "none")
+
+terrible_frequency_plot
+```
+
+
+
+
+```{r, echo=FALSE, include=T}
+excellent_frequency_plot <- textstat_frequency(excellent_frequency, n = 10) %>%
+  ggplot(aes(x = reorder(feature, -rank), y = frequency)) +
+  geom_col(fill = "seagreen4") + 
+  coord_flip() +
+  labs(x = "", 
+       y = "Total occurrences", 
+       title = "Word Frequency in Excellent Reviews")+
+  theme_minimal()+
+  theme(legend.position = "none")
+
+excellent_frequency_plot
+
+```
+
+```{r, echo=FALSE, include=T}
+
+frequency_plots <- grid.arrange(excellent_frequency_plot, terrible_frequency_plot, 
+             nrow = 1)
+
+ggsave("frequency_plot.png", 
+       plot = frequency_plots, 
+       dpi=300)
+
+```
