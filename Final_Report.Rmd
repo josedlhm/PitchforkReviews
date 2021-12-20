@@ -229,7 +229,7 @@ We can see that the average score for reviews containing the word *bonus* is sli
 
 ### <span style="color: gray15;">**Conclusion**</span>
 
-The idea behind exploring the language of good and bad reviews was to arrive at some kind of common standard. If we could find patterns in the way people spoke about music, then we hoped to get a sense of what exactly made a good album, at least according to the shared criteria of Pitchfork writers. This project turned out to be quixotic. Rather than arriving at a set of descriptors, we found instead a series of nouns: particular artists, labels, and types of products, like reissues and remasterings that were either consistently good or bad. It seems then, that it is easier to name things that are good or bad than it is to find the common terms that explain what makes them this way.
+The idea behind exploring the language of good and bad reviews was to arrive at some kind of common standard. If we could find patterns in the way people spoke about music, then we hoped to get a sense of what exactly made a good album, at least according to the shared criteria of Pitchfork writers. This project turned out to be quixotic. Rather than arriving at a set of descriptors, we found instead a series of nouns: particular artists, labels, and types of products, like reissues and remasterings, which were either consistently good or bad. It seems then, that it is easier to name things that are good or bad than it is to find the common terms that explain what makes them this way.
 
 
 ### <span style="color: gray15;">**Appendices**</span>
